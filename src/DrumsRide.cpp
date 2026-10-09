@@ -1,5 +1,6 @@
 #include "Autodafe.hpp"
 #include "rides.h"
+#include "RawSamplePlayer.hpp"
 
 
 
@@ -22,29 +23,25 @@ enum LightIds {
     SAMPLETYPE_LIGHT,
     NUM_LIGHTS=SAMPLETYPE_LIGHT + 8
     };
-
-    int numsamples = 8;
+	static constexpr int numSamples = 8;
 	dsp::SchmittTrigger trigger;
 	dsp::SchmittTrigger sampletypeselector;
     int sampletype = 1;
-    
-
-
-       unsigned int count1  = RIDE_sample1_len;
-    unsigned int count2  = RIDE_sample2_len;
-    unsigned int count3  = RIDE_sample3_len;
-    unsigned int count4  = RIDE_sample4_len;
-    unsigned int count5  = RIDE_sample5_len;
-    unsigned int count6  = RIDE_sample6_len;
-    unsigned int count7  = RIDE_sample7_len;
-    unsigned int count8  = RIDE_sample8_len;
+	RawSamplePlayer players[numSamples];
 
 	
 	DrumsRide() {
+		players[0].setSample(RIDE_sample1, RIDE_sample1_len);
+		players[1].setSample(RIDE_sample2, RIDE_sample2_len);
+		players[2].setSample(RIDE_sample3, RIDE_sample3_len);
+		players[3].setSample(RIDE_sample4, RIDE_sample4_len);
+		players[4].setSample(RIDE_sample5, RIDE_sample5_len);
+		players[5].setSample(RIDE_sample6, RIDE_sample6_len);
+		players[6].setSample(RIDE_sample7, RIDE_sample7_len);
+		players[7].setSample(RIDE_sample8, RIDE_sample8_len);
 		config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
 
  configParam(DrumsRide::SAMPLETYPE, 0.0, 1.0, 0.0, "");
-//configParam(DrumsRide::PITCH, -12, 12.0, 0.0, "");
 
 
 
@@ -88,170 +85,24 @@ enum LightIds {
 
 void DrumsRide::process(const ProcessArgs &args)
 {
-    
- 
-   
-    
-    if (sampletypeselector.process(params[SAMPLETYPE].getValue()))
-    { 
-         if (sampletype<numsamples) {
-        sampletype++;
-            
-         }
-        else
-        {
-            sampletype=1;
-        }
-    }
-    for (int i = 0; i < numsamples; i++) {
-   lights[SAMPLETYPE_LIGHT+i].value=0.0;
-       
-        
-       
-    }
-   
-     lights[SAMPLETYPE_LIGHT + sampletype - 1].value=1.0;
-   
-    
-	if (trigger.process(inputs[TRIG_INPUT].getVoltage())) {
-		count1 = 0;
-        count2 = 0;
-        count3 = 0;
-        count4 = 0;
-        count5 = 0;
-        count6 = 0;
-        count7 = 0;
-        count8 = 0;
-        
+	if (sampletypeselector.process(params[SAMPLETYPE].getValue())) {
+		if (sampletype < numSamples)
+			sampletype++;
+		else
+			sampletype = 1;
 	}
-    
-    
-	if (sampletype == 1)
-    {
-                if( count1 < RIDE_sample1_len ) {
-                    int16_t sample;
-                    sample  = RIDE_sample1[count1++];
-                    sample |= RIDE_sample1[count1++] << 8;
-                    
-                    outputs[AUDIO_OUTPUT].setVoltage( 5.0 * (float)sample / RIDE_sample1_len );
-                } else {
-                    outputs[AUDIO_OUTPUT].setVoltage( 0.0 );
-                }
-    }
-    
-    
-    
-    
-    if (sampletype == 2)
-    {
-        if( count2 < RIDE_sample2_len ) {
-            int16_t sample;
-            sample  = RIDE_sample2[count2++];
-            sample |= RIDE_sample2[count2++] << 8;
-            
-            outputs[AUDIO_OUTPUT].setVoltage( 5.0 * (float)sample / RIDE_sample2_len );
-        } else {
-            outputs[AUDIO_OUTPUT].setVoltage( 0.0 );
-        }
-    }
-    
-    
-    
-    if (sampletype == 3)
-    {
-        if( count3 < RIDE_sample3_len ) {
-            int16_t sample;
-            sample  = RIDE_sample3[count3++];
-            sample |= RIDE_sample3[count3++] << 8;
-            
-            outputs[AUDIO_OUTPUT].setVoltage( 5.0 * (float)sample / RIDE_sample3_len );
-        } else {
-            outputs[AUDIO_OUTPUT].setVoltage( 0.0 );
-        }
-    }
-    
-    
-    
-    
-    
-    
-    if (sampletype == 4)
-    {
-        if( count4 < RIDE_sample4_len ) {
-            int16_t sample;
-            sample  = RIDE_sample4[count4++];
-            sample |= RIDE_sample4[count4++] << 8;
-            
-            outputs[AUDIO_OUTPUT].setVoltage( 5.0 * (float)sample / RIDE_sample4_len );
-        } else {
-            outputs[AUDIO_OUTPUT].setVoltage( 0.0 );
-        }
-    }
-    
-    
-    
-    if (sampletype == 5)
-    {
-        if( count5 < RIDE_sample5_len ) {
-            int16_t sample;
-            sample  = RIDE_sample5[count5++];
-            sample |= RIDE_sample5[count5++] << 8;
-            
-            outputs[AUDIO_OUTPUT].setVoltage( 5.0 * (float)sample / RIDE_sample5_len );
-        } else {
-            outputs[AUDIO_OUTPUT].setVoltage( 0.0 );
-        }
-    }
-    
-    
-    
-    if (sampletype == 6)
-    {
-        if( count6 < RIDE_sample6_len ) {
-            int16_t sample;
-            sample  = RIDE_sample6[count6++];
-            sample |= RIDE_sample6[count6++] << 8;
-            
-            outputs[AUDIO_OUTPUT].setVoltage( 5.0 * (float)sample / RIDE_sample6_len );
-        } else {
-            outputs[AUDIO_OUTPUT].setVoltage( 0.0 );
-        }
-    }
-    
-    
-    
-    if (sampletype == 7)
-    {
-        if( count7 < RIDE_sample7_len ) {
-            int16_t sample;
-            sample  = RIDE_sample7[count7++];
-            sample |= RIDE_sample7[count7++] << 8;
-            
-            outputs[AUDIO_OUTPUT].setVoltage( 5.0 * (float)sample / RIDE_sample7_len );
-        } else {
-            outputs[AUDIO_OUTPUT].setVoltage( 0.0 );
-        }
-    }
-   
-    
-    
-    
-    if (sampletype == 8)
-    {
-        if( count8 < RIDE_sample8_len ) {
-            int16_t sample;
-            sample  = RIDE_sample8[count8++];
-            sample |= RIDE_sample8[count8++] << 8;
-            
-            outputs[AUDIO_OUTPUT].setVoltage( 5.0 * (float)sample / RIDE_sample8_len );
-        } else {
-            outputs[AUDIO_OUTPUT].setVoltage( 0.0 );
-        }
-    }
-    
-    
-}
 
+	for (int i = 0; i < numSamples; i++)
+		lights[SAMPLETYPE_LIGHT + i].setBrightness(0.0f);
+	lights[SAMPLETYPE_LIGHT + sampletype - 1].setBrightness(1.0f);
+
+	if (trigger.process(inputs[TRIG_INPUT].getVoltage())) {
+		for (RawSamplePlayer &player : players)
+			player.reset();
+	}
+
+	outputs[AUDIO_OUTPUT].setVoltage(5.0f * players[sampletype - 1].next(args.sampleRate));
+}
 
 struct DrumsRideWidget : ModuleWidget {
     DrumsRideWidget(DrumsRide *module);
@@ -278,7 +129,6 @@ struct DrumsRideWidget : ModuleWidget {
     
     addParam(createParam<LEDButton>(Vec(21, 60), module, DrumsRide::SAMPLETYPE));
     
-    //addParam(createParam<Davies1900hBlackKnob>(Vec(30, 80), module, DrumsRide::PITCH));
     
         addChild(createLight<SmallLight<GreenLight>>(Vec(10,100), module, DrumsRide::SAMPLETYPE_LIGHT+0));
     addChild(createLight<SmallLight<GreenLight>>(Vec(10,125),  module, DrumsRide::SAMPLETYPE_LIGHT+1));

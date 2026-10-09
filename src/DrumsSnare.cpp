@@ -1,5 +1,6 @@
 #include "Autodafe.hpp"
 #include "snares.h"
+#include "RawSamplePlayer.hpp"
 
 
 
@@ -21,30 +22,25 @@ enum LightIds {
     SAMPLETYPE_LIGHT,
     NUM_LIGHTS=SAMPLETYPE_LIGHT + 8
     };
-
-
-
-    int numsamples = 8;
+	static constexpr int numSamples = 8;
 	dsp::SchmittTrigger trigger;
 	dsp::SchmittTrigger sampletypeselector;
     int sampletype = 1;
-  
-        
-    unsigned int count1  = SNARE_sample1_len;
-    unsigned int count2  = SNARE_sample2_len;
-    unsigned int count3  = SNARE_sample3_len;
-    unsigned int count4  = SNARE_sample4_len;
-    unsigned int count5  = SNARE_sample5_len;
-    unsigned int count6  = SNARE_sample6_len;
-    unsigned int count7  = SNARE_sample7_len;
-    unsigned int count8  = SNARE_sample8_len;
+	RawSamplePlayer players[numSamples];
     
 	
 	DrumsSnare() {
+		players[0].setSample(SNARE_sample1, SNARE_sample1_len);
+		players[1].setSample(SNARE_sample2, SNARE_sample2_len);
+		players[2].setSample(SNARE_sample3, SNARE_sample3_len);
+		players[3].setSample(SNARE_sample4, SNARE_sample4_len);
+		players[4].setSample(SNARE_sample5, SNARE_sample5_len);
+		players[5].setSample(SNARE_sample6, SNARE_sample6_len);
+		players[6].setSample(SNARE_sample7, SNARE_sample7_len);
+		players[7].setSample(SNARE_sample8, SNARE_sample8_len);
 		config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
 
 configParam(DrumsSnare::SAMPLETYPE, 0.0, 1.0, 0.0, "");
-//configParam(DrumsSnare::PITCH, -12, 12.0, 0.0, "");
 
 
     }
@@ -82,173 +78,24 @@ configParam(DrumsSnare::SAMPLETYPE, 0.0, 1.0, 0.0, "");
 
 void DrumsSnare::process(const ProcessArgs &args)
 {
-    
-    
-  
-   
-    
-    if (sampletypeselector.process(params[SAMPLETYPE].getValue()))
-    { 
-         if (sampletype<numsamples) {
-        sampletype++;
-            
-         }
-        else
-        {
-            sampletype=1;
-        }
-    }
-    for (int i = 0; i < numsamples; i++) {
-   
-       
-        lights[SAMPLETYPE_LIGHT+i].value=0.0;
-       
-        
-       
-    }
-   
-     lights[SAMPLETYPE_LIGHT + sampletype - 1].value=1.0;
-   
-    
-	if (trigger.process(inputs[TRIG_INPUT].getVoltage())) {
-		count1 = 0;
-        count2 = 0;
-        count3 = 0;
-        count4 = 0;
-        count5 = 0;
-        count6 = 0;
-        count7 = 0;
-        count8 = 0;
-        
+	if (sampletypeselector.process(params[SAMPLETYPE].getValue())) {
+		if (sampletype < numSamples)
+			sampletype++;
+		else
+			sampletype = 1;
 	}
-    
-    
-	if (sampletype == 1)
-    {
-                if( count1 < SNARE_sample1_len ) {
-                    int16_t sample;
-                    sample  = SNARE_sample1[count1++];
-                    sample |= SNARE_sample1[count1++] << 8;
-                    
-                    outputs[AUDIO_OUTPUT].setVoltage( 5.0 * (float)sample / SNARE_sample1_len  );
-                } else {
-                    outputs[AUDIO_OUTPUT].setVoltage( 0.0 );
-                }
-    }
-    
-    
-    
-    
-    if (sampletype == 2)
-    {
-        if( count2 < SNARE_sample2_len ) {
-            int16_t sample;
-            sample  = SNARE_sample2[count2++];
-            sample |= SNARE_sample2[count2++] << 8;
-            
-            outputs[AUDIO_OUTPUT].setVoltage( 5.0 * (float)sample / SNARE_sample2_len );
-        } else {
-            outputs[AUDIO_OUTPUT].setVoltage( 0.0 );
-        }
-    }
-    
-    
-    
-    if (sampletype == 3)
-    {
-        if( count3 < SNARE_sample3_len ) {
-            int16_t sample;
-            sample  = SNARE_sample3[count3++];
-            sample |= SNARE_sample3[count3++] << 8;
-            
-            outputs[AUDIO_OUTPUT].setVoltage( 5.0 * (float)sample / SNARE_sample3_len );
-        } else {
-            outputs[AUDIO_OUTPUT].setVoltage( 0.0 );
-        }
-    }
-    
-    
-    
-    
-    
-    
-    if (sampletype == 4)
-    {
-        if( count4 < SNARE_sample4_len ) {
-            int16_t sample;
-            sample  = SNARE_sample4[count4++];
-            sample |= SNARE_sample4[count4++] << 8;
-            
-            outputs[AUDIO_OUTPUT].setVoltage( 5.0 * (float)sample / SNARE_sample4_len );
-        } else {
-            outputs[AUDIO_OUTPUT].setVoltage( 0.0 );
-        }
-    }
-    
-    
-    
-    if (sampletype == 5)
-    {
-        if( count5 < SNARE_sample5_len ) {
-            int16_t sample;
-            sample  = SNARE_sample5[count5++];
-            sample |= SNARE_sample5[count5++] << 8;
-            
-            outputs[AUDIO_OUTPUT].setVoltage( 5.0 * (float)sample / SNARE_sample5_len );
-        } else {
-            outputs[AUDIO_OUTPUT].setVoltage( 0.0 );
-        }
-    }
-    
-    
-    
-    if (sampletype == 6)
-    {
-        if( count6 < SNARE_sample6_len ) {
-            int16_t sample;
-            sample  = SNARE_sample6[count6++];
-            sample |= SNARE_sample6[count6++] << 8;
-            
-            outputs[AUDIO_OUTPUT].setVoltage( 5.0 * (float)sample / SNARE_sample6_len );
-        } else {
-            outputs[AUDIO_OUTPUT].setVoltage( 0.0 );
-        }
-    }
-    
-    
-    
-    if (sampletype == 7)
-    {
-        if( count7 < SNARE_sample7_len ) {
-            int16_t sample;
-            sample  = SNARE_sample7[count7++];
-            sample |= SNARE_sample7[count7++] << 8;
-            
-            outputs[AUDIO_OUTPUT].setVoltage( 5.0 * (float)sample / SNARE_sample7_len );
-        } else {
-            outputs[AUDIO_OUTPUT].setVoltage( 0.0 );
-        }
-    }
-   
-    
-    
-    
-    if (sampletype == 8)
-    {
-        if( count8 < SNARE_sample8_len ) {
-            int16_t sample;
-            sample  = SNARE_sample8[count8++];
-            sample |= SNARE_sample8[count8++] << 8;
-            
-            outputs[AUDIO_OUTPUT].setVoltage( 5.0 * (float)sample / SNARE_sample8_len );
-        } else {
-            outputs[AUDIO_OUTPUT].setVoltage( 0.0 );
-        }
-    }
-    
-    
-}
 
+	for (int i = 0; i < numSamples; i++)
+		lights[SAMPLETYPE_LIGHT + i].setBrightness(0.0f);
+	lights[SAMPLETYPE_LIGHT + sampletype - 1].setBrightness(1.0f);
+
+	if (trigger.process(inputs[TRIG_INPUT].getVoltage())) {
+		for (RawSamplePlayer &player : players)
+			player.reset();
+	}
+
+	outputs[AUDIO_OUTPUT].setVoltage(5.0f * players[sampletype - 1].next(args.sampleRate));
+}
 
 struct DrumsSnareWidget : ModuleWidget {
     DrumsSnareWidget(DrumsSnare *module);
@@ -273,7 +120,6 @@ struct DrumsSnareWidget : ModuleWidget {
     
     addParam(createParam<LEDButton>(Vec(21, 60), module, DrumsSnare::SAMPLETYPE));
     
-    //addParam(createParam<Davies1900hBlackKnob>(Vec(30, 80), module, DrumsSnare::PITCH));
     
     
 
