@@ -1,6 +1,6 @@
 # Autodafe Drum Kit for VCV Rack
 
-![Autodafe Drum Kit]([https://www.autodafe.net/path/to/image.png](https://www.autodafe.net/images/com_eshop/products/resized/autodafe-drum-kit-vcv-rack-1000x800.png))
+![Autodafe Drum Kit](https://www.autodafe.net/images/com_eshop/products/resized/autodafe-drum-kit-vcv-rack-1000x800.png)
 
 A free collection of sample-based drum modules for **VCV Rack**, featuring sounds from classic and vintage drum machines.
 
